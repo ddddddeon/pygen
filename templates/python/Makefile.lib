@@ -1,0 +1,19 @@
+.PHONY:
+run: venv
+	python main.py
+
+.PHONY:
+seed: venv
+	python main.py -s
+
+.PHONY:
+install: venv
+	pip install -r requirements.txt
+
+.PHONY:
+check: venv
+	mypy *.py
+
+.PHONY:
+venv:
+	. bin/activate
