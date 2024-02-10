@@ -1,5 +1,5 @@
 import argparse
-from project import Lang, ProjectType
+from .project import Lang, ProjectType
 
 
 def parse_args() -> tuple[Lang, str, ProjectType]:

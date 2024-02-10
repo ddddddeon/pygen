@@ -1,8 +1,9 @@
 import os
-from util import parse_args
-from project import Project
+from .util import parse_args
+from .project import Project
 
-if __name__ == "__main__":
+
+def main():
     lang, name, proj_type = parse_args()
     project = Project(
         lang=lang,
@@ -11,3 +12,7 @@ if __name__ == "__main__":
     )
 
     project.generate()
+
+
+if __name__ == "__main__":
+    main()

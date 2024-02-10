@@ -4,3 +4,5 @@ bin/
 lib/
 pyvenv.cfg
 mypy.ini
+build/
+**.egg-info/
