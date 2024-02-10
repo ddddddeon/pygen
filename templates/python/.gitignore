@@ -3,3 +3,4 @@ log.txt
 bin/
 lib/
 pyvenv.cfg
+mypy.ini

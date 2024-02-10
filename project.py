@@ -1,8 +1,9 @@
+import os
 import shutil
 import pybars
+import subprocess
 from enum import Enum, StrEnum
 from typing import Optional
-import os
 from os.path import abspath, dirname
 from pydantic import BaseModel
 from rich import print
@@ -70,6 +71,7 @@ class Project(BaseModel):
         user_cwd = os.getcwd()
         self._template_dir = f"{proc_cwd}/templates/{self.lang.value}"
         self._project_dir = f"{user_cwd}/{self.name}"
+        self.domain = self.get_domain()
 
     def create_dir(self) -> None:
         try:
@@ -78,7 +80,10 @@ class Project(BaseModel):
             print(e)
             exit(1)
 
-    def template(self, from_path: str, to_path: str) -> None:
+    def template(self, from_path: str, to_path: Optional[str] = None) -> None:
+        if not to_path:
+            to_path = from_path
+
         with open(f"{self._template_dir}/{from_path}", "r") as infile:
             source = infile.read()
             compiler = pybars.Compiler()
@@ -89,7 +94,20 @@ class Project(BaseModel):
 
         print(to_path)
 
-    def copy_file(self, from_path: str, to_path: str):
+    def get_domain(self) -> Optional[str]:
+        if self.domain is not None:
+            return self.domain
+        if self.lang not in [Lang.GO, Lang.JAVA]:
+            return None
+
+        domain_file = f"{self._template_dir}/domain"
+        with open(domain_file) as domain_file:
+            return domain_file.readline().strip()
+
+    def copy_file(self, from_path: str, to_path: Optional[str] = None) -> None:
+        if not to_path:
+            to_path = from_path
+
         shutil.copy(
             f"{self._template_dir}/{from_path}",
             f"{self._project_dir}/{to_path}",
@@ -106,36 +124,66 @@ class Project(BaseModel):
         self.template(makefile_name, "Makefile")
 
     def create_gitignore(self) -> None:
-        self.copy_file(".gitignore", ".gitignore")
+        self.copy_file(".gitignore")
 
     def create_clang_format(self) -> None:
-        self.copy_file(".clang-format", ".clang-format")
+        self.copy_file(".clang-format")
 
     def create_python_project(self) -> None:
         self.create_dir()
+        cwd = os.getcwd()
+        os.chdir(self._project_dir)
+        command = "virtualenv ."
+        output = subprocess.check_output(command, shell=True)
+        print(output)
+        os.chdir(cwd)
 
     def create_rust_project(self) -> None:
-        pass
+        flags = {ProjectType.LIBRARY: "--lib", ProjectType.EXECUTABLE: "--bin"}
+        command = f"cargo new {self.name} {flags[self.project_type]}"
+        output = subprocess.check_output(command, shell=True)
+        print(output)
+
+        if self.project_type == ProjectType.EXECUTABLE:
+            self.template("src/main.rs")
+        open(f"{self._project_dir}/src/lib.rs", "w").close()
 
     def create_c_project(self) -> None:
         self.create_dir()
         self.create_clang_format()
         os.mkdir(f"{self._project_dir}/src")
         if self.project_type == ProjectType.EXECUTABLE:
-            self.template("src/main.c", "src/main.c")
+            self.template("src/main.c")
 
     def create_cpp_project(self) -> None:
         self.create_dir()
         self.create_clang_format()
         os.mkdir(f"{self._project_dir}/src")
         if self.project_type == ProjectType.EXECUTABLE:
-            self.template("src/main.cpp", "src/main.cpp")
+            self.template("src/main.cpp")
 
     def create_go_project(self) -> None:
         self.create_dir()
+        if not self.domain:
+            raise AttributeError("Domain not set")
+
+        command = f"go mod init {self.domain}/{self.name}"
+        cwd = os.getcwd()
+        os.chdir(self._project_dir)
+        output = subprocess.check_output(command, shell=True)
+        print(output)
+        self.template("main.go")
+        os.chdir(cwd)
 
     def create_java_project(self) -> None:
-        pass
+        if not self.domain:
+            raise AttributeError("Domain not set")
+
+        command = f"mvn archetype:generate -DgroupId={self.domain}.{self.name} -DartifactId={self.name} -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false"
+        cwd = os.getcwd()
+        output = subprocess.check_output(command, shell=True)
+        print(output)
+        self.template("manifest.txt")
 
     def generate(self) -> None:
         match self.lang:

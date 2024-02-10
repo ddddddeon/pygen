@@ -9,6 +9,5 @@ if __name__ == "__main__":
         name=name,
         project_type=proj_type,
     )
-    print(project)
 
     project.generate()
