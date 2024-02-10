@@ -1,5 +1,5 @@
 # pygen 
-Python implementation of (gen)[https://github.com/ddddddeon/gen]: a tool to generate project boilerplate, with support for various languages
+Python implementation of [gen](https://github.com/ddddddeon/gen): a tool to generate project boilerplate, with support for various languages
 
 ## Installation
 ```sh
