@@ -7,8 +7,6 @@ from typing import Optional
 from os.path import abspath, dirname
 from pydantic import BaseModel
 from rich import print
-from rich.columns import Columns
-from rich.tree import Tree
 
 
 class ProjectType(Enum):
@@ -51,10 +49,6 @@ class Lang(StrEnum):
         if value not in langs:
             raise ValueError(f"Invalid language {value}! Valid languages: {langs()}")
         return langs[value]
-
-    @classmethod
-    def langs(cls) -> list[str]:
-        return langs.keys()
 
 
 class Project(BaseModel):
@@ -100,8 +94,7 @@ class Project(BaseModel):
         if self.lang not in [Lang.GO, Lang.JAVA]:
             return None
 
-        domain_file = f"{self._template_dir}/domain"
-        with open(domain_file) as domain_file:
+        with open(f"{self._template_dir}/domain") as domain_file:
             return domain_file.readline().strip()
 
     def copy_file(self, from_path: str, to_path: Optional[str] = None) -> None:
