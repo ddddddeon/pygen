@@ -1,6 +1,6 @@
 import os
-from .util import parse_args
-from .project import Project
+from gen.util import parse_args
+from gen.project import Project
 
 
 def main():
