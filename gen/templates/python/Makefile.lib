@@ -17,3 +17,7 @@ check: venv
 .PHONY:
 venv:
 	. bin/activate
+
+.PHONY:
+fmt:
+    black .

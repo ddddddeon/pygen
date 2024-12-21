@@ -67,6 +67,10 @@ class Project(BaseModel):
         self._project_dir = f"{user_cwd}/{self.name}"
         self.domain = self.get_domain()
 
+    def run(self, command):
+        output = subprocess.check_output(command, shell=True)
+        print(output)
+        
     def create_dir(self) -> None:
         try:
             os.mkdir(self._project_dir)
@@ -126,16 +130,14 @@ class Project(BaseModel):
         self.create_dir()
         cwd = os.getcwd()
         os.chdir(self._project_dir)
-        command = "virtualenv ."
-        output = subprocess.check_output(command, shell=True)
-        print(output)
+        self.run("virtualenv .")
+        self.run(". bin/activate; pip install poetry; poetry init -n --name={self.name}")
+        self.run(". bin/active; poetry add black mypy")
         os.chdir(cwd)
 
     def create_rust_project(self) -> None:
         flags = {ProjectType.LIBRARY: "--lib", ProjectType.EXECUTABLE: "--bin"}
-        command = f"cargo new {self.name} {flags[self.project_type]}"
-        output = subprocess.check_output(command, shell=True)
-        print(output)
+        self.run("cargo new {self.name} {flags[self.project_type]}")
 
         if self.project_type == ProjectType.EXECUTABLE:
             self.template("src/main.rs")
@@ -160,11 +162,9 @@ class Project(BaseModel):
         if not self.domain:
             raise AttributeError("Domain not set")
 
-        command = f"go mod init {self.domain}/{self.name}"
         cwd = os.getcwd()
         os.chdir(self._project_dir)
-        output = subprocess.check_output(command, shell=True)
-        print(output)
+        self.run(f"go mod init {self.domain}/{self.name}")
         self.template("main.go")
         os.chdir(cwd)
 
@@ -172,11 +172,10 @@ class Project(BaseModel):
         if not self.domain:
             raise AttributeError("Domain not set")
 
-        command = f"mvn archetype:generate -DgroupId={self.domain}.{self.name} -DartifactId={self.name} -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false"
         cwd = os.getcwd()
-        output = subprocess.check_output(command, shell=True)
-        print(output)
+        self.run(f"mvn archetype:generate -DgroupId={self.domain}.{self.name} -DartifactId={self.name} -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false")
         self.template("manifest.txt")
+        os.chdir(cwd)
 
     def generate(self) -> None:
         match self.lang:
