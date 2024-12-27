@@ -20,4 +20,4 @@ venv:
 
 .PHONY:
 fmt:
-    black .
+	black .
