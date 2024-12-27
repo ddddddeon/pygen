@@ -132,7 +132,7 @@ class Project(BaseModel):
         os.chdir(self._project_dir)
         self.run("virtualenv .")
         self.run(". bin/activate; pip install poetry; poetry init -n --name={self.name}")
-        self.run(". bin/active; poetry add black mypy")
+        self.run(". bin/activate; poetry add black mypy")
         os.chdir(cwd)
 
     def create_rust_project(self) -> None:
