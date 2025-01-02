@@ -8,16 +8,13 @@ seed: venv
 
 .PHONY:
 install: venv
-	pip install -r requirements.txt
+	uv sync
 
 .PHONY:
 check: venv
 	mypy *.py
 
-.PHONY:
-venv:
-	. bin/activate
 
 .PHONY:
 fmt:
-	black .
+	ruff format
