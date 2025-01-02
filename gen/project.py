@@ -29,6 +29,7 @@ class Lang(StrEnum):
     CPP = "cpp"
     GO = "go"
     JAVA = "java"
+    ELIXIR = "elixir"
 
     @classmethod
     def _missing_(cls, value):
@@ -43,6 +44,9 @@ class Lang(StrEnum):
             "go": cls.GO,
             "golang": cls.GO,
             "java": cls.JAVA,
+            "elixir": cls.ELIXIR,
+            "ex": cls.ELIXIR,
+            "exs": cls.ELIXIR,
         }
 
         value = value.lower()
@@ -176,6 +180,10 @@ class Project(BaseModel):
         self.template("manifest.txt")
         os.chdir(cwd)
 
+    def create_elixir_project(self) -> None:
+        flags = {ProjectType.LIBRARY: "--sup", ProjectType.EXECUTABLE: ""}
+        self.run(f"mix new {self.name} {flags[self.project_type]}")
+
     def generate(self) -> None:
         match self.lang:
             case Lang.PYTHON:
@@ -190,6 +198,8 @@ class Project(BaseModel):
                 self.create_go_project()
             case Lang.JAVA:
                 self.create_java_project()
+            case Lang.ELIXIR:
+                self.create_elixir_project()
 
         self.create_makefile()
         self.create_gitignore()
