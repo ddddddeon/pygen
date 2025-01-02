@@ -29,7 +29,6 @@ class Lang(StrEnum):
     CPP = "cpp"
     GO = "go"
     JAVA = "java"
-    ELIXIR = "elixir"
 
     @classmethod
     def _missing_(cls, value):
@@ -44,9 +43,6 @@ class Lang(StrEnum):
             "go": cls.GO,
             "golang": cls.GO,
             "java": cls.JAVA,
-            "elixir": cls.ELIXIR,
-            "ex": cls.ELIXIR,
-            "exs": cls.ELIXIR,
         }
 
         value = value.lower()
@@ -74,7 +70,7 @@ class Project(BaseModel):
     def run(self, command):
         output = subprocess.check_output(command, shell=True)
         print(output)
-        
+
     def create_dir(self) -> None:
         try:
             os.mkdir(self._project_dir)
@@ -176,13 +172,11 @@ class Project(BaseModel):
             raise AttributeError("Domain not set")
 
         cwd = os.getcwd()
-        self.run(f"mvn archetype:generate -DgroupId={self.domain}.{self.name} -DartifactId={self.name} -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false")
+        self.run(
+            f"mvn archetype:generate -DgroupId={self.domain}.{self.name} -DartifactId={self.name} -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false"
+        )
         self.template("manifest.txt")
         os.chdir(cwd)
-
-    def create_elixir_project(self) -> None:
-        flags = {ProjectType.LIBRARY: "--sup", ProjectType.EXECUTABLE: ""}
-        self.run(f"mix new {self.name} {flags[self.project_type]}")
 
     def generate(self) -> None:
         match self.lang:
@@ -198,8 +192,6 @@ class Project(BaseModel):
                 self.create_go_project()
             case Lang.JAVA:
                 self.create_java_project()
-            case Lang.ELIXIR:
-                self.create_elixir_project()
 
         self.create_makefile()
         self.create_gitignore()
