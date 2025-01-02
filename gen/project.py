@@ -130,9 +130,8 @@ class Project(BaseModel):
         self.create_dir()
         cwd = os.getcwd()
         os.chdir(self._project_dir)
-        self.run("virtualenv .")
-        self.run(". bin/activate; pip install poetry; poetry init -n --name={self.name}")
-        self.run(". bin/activate; poetry add black mypy")
+        self.run("uv init; uv venv; rm hello.py")
+        self.run(". .venv/bin/activate; uv add ruff mypy")
         os.chdir(cwd)
 
     def create_rust_project(self) -> None:
