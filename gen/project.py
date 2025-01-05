@@ -136,7 +136,7 @@ class Project(BaseModel):
 
     def create_rust_project(self) -> None:
         flags = {ProjectType.LIBRARY: "--lib", ProjectType.EXECUTABLE: "--bin"}
-        self.run("cargo new {self.name} {flags[self.project_type]}")
+        self.run(f"cargo new {self.name} {flags[self.project_type]}")
 
         if self.project_type == ProjectType.EXECUTABLE:
             self.template("src/main.rs")
