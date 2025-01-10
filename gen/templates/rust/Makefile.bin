@@ -34,7 +34,7 @@ publish:
 
 .PHONY: fmt
 fmt:
-	rustfmt **/*.rs
+    cargo fmt
 
 .PHONY: lint
 lint:
