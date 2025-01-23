@@ -12,6 +12,10 @@ build: lint
 test:
 	cargo test -- --nocapture
 
+.PHONY: bench
+bench:
+	cargo bench
+
 .PHONY: release
 release: lint
 	cargo build --release
