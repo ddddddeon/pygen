@@ -38,7 +38,7 @@ publish:
 
 .PHONY: fmt
 fmt:
-    cargo fmt
+	cargo fmt
 
 .PHONY: lint
 lint:

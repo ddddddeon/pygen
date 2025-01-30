@@ -9,10 +9,10 @@ CFLAGS=-g -Wall $(INCLUDES)
 LIB_DIR=/usr/lib/
 LIB_NAME=lib$(NAME).so
 LIB_OUTFILE=bin/$(LIB_NAME)
-INFILES=$(wildcard src/*.c)
-HEADER_INFILES=$(wildcard src/*.h)
+INFILES=$(shell find src -name "*.c")
+HEADER_INFILES=$(shell find src -name "*.h")
 HEADER_OUTPATH=/usr/include/
-TEST_INFILES=$(wildcard test/*.c)
+TEST_INFILES=$(shell find test -name "*.c")
 TEST_OUTFILE=bin/test
 
 .PHONY: $(NAME)

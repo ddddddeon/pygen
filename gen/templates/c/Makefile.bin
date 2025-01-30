@@ -4,7 +4,7 @@ CFLAGS=-g -Wall -Wextra -fuse-ld=lld $(LIBS) #-DDEBUG
 
 CC=clang
 OUTFILE=bin/$(NAME)
-INFILES=$(wildcard src/*.c)
+INFILES=$(shell find src -name "*.c")
 
 $(NAME):
 	set -e; \
