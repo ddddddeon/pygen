@@ -131,7 +131,7 @@ class Project(BaseModel):
         cwd = os.getcwd()
         os.chdir(self._project_dir)
         self.run("uv init; uv venv; rm hello.py")
-        self.run(". .venv/bin/activate; uv add ruff mypy")
+        self.run(". .venv/bin/activate; uv add ruff mypy python-lsp-server")
         os.chdir(cwd)
 
     def create_rust_project(self) -> None:
