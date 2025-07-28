@@ -1,19 +1,14 @@
 .PHONY:
-run: venv
-	python main.py
+run:
+	uv run main.py
 
 .PHONY:
-seed: venv
-	python main.py -s
-
-.PHONY:
-install: venv
+install: 
 	uv sync
 
 .PHONY:
-check: venv
+check:
 	mypy *.py
-
 
 .PHONY:
 fmt:
